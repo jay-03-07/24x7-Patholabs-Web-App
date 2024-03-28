@@ -16,7 +16,7 @@ function MyNavbar() {
   return (
     <Router>
 
-      <Navbar fixed="top" expand="lg" className="bg-body-tertiary">
+      <Navbar expand="lg" className="bg-body-tertiary">
         <Container fluid>
           <Navbar.Brand as={Link} to="/"><span className="logo">24x7 Patholabs</span></Navbar.Brand>
           <Navbar.Toggle aria-controls="navbarScroll" />
