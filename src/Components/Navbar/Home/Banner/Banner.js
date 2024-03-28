@@ -2,20 +2,20 @@ import React from 'react';
 import Carousel from 'react-bootstrap/Carousel';
 import { Container, Row, Col } from 'react-bootstrap';
 
-import image1 from '../images/download (1).jpeg';
-import image2 from '../images/download.jpeg';
-import image3 from '../images/images.jpeg';
+import image1 from '../../images/download (1).jpeg';
+import image2 from '../../images/download.jpeg';
+import image3 from '../../images/images.jpeg';
 
-import safeIcon from '../images/Safe_76x76_labs.png';
-import homeIcon from '../images/Lab_delivery_2x.png';
-import reportIcon from '../images/Lab_online_report_2x.png';
-import doctorIcon from '../images/Lab_doctor_2x.png';
-import offerIcon from '../images/Lab_offer_2x.png';
+import safeIcon from '../../images/Safe_76x76_labs.png';
+import homeIcon from '../../images/Lab_delivery_2x.png';
+import reportIcon from '../../images/Lab_online_report_2x.png';
+import doctorIcon from '../../images/Lab_doctor_2x.png';
+import offerIcon from '../../images/Lab_offer_2x.png';
 
 function Banner() {
     return (
-        <div style={{backgroundColor:'#EAECEC',width: '100%', height:'400px'}}>
-            <Container fluid>
+        <div style={{ backgroundColor:'#EAECEC',width: '100%', minheight:'400px'}}>
+            <Container>
                 <Row>
                     {/* Carousel Images */}
                     <Col lg={6}>
@@ -62,11 +62,11 @@ function Banner() {
                     {/* Features with Images */}
                      <Col lg={6}>
                         <Row className="mt-4 justify-content-center align-items-center">
-                            <h3>Lab Test From The Comfort Of Your Home</h3>
-                            <p>Trusted by 40 Lakhs+ satisfied customers | 1 Crore+ lab tests booked</p>
+                            <p  style={{fontSize:'24px', fontWeight:'700', color:'#212121'}}>Lab Test From The Comfort Of Your Home</p>
+                            <p style={{fontSize:'16px',color:'#212121'}}>Trusted by 40 Lakhs+ satisfied customers | 1 Crore+ lab tests booked</p>
                         </Row>
 
-                        <div className="features d-flex justify-content-center">
+                        <div className="features d-flex justify-content-center mt-4">
                             <Row>
                                 <Col>
                                     <div className="feature-item text-center">

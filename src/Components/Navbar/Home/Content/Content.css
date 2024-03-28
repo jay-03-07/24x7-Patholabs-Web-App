@@ -1,0 +1,41 @@
+.package-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.package-button {
+    padding: 10px 20px;
+    border: 2px solid #ccc;
+    border-radius: 20px;
+    background-color: transparent;
+    color: #616161;
+    cursor: pointer;
+}
+
+.package-button:hover,
+.package-button.active {
+    background-color: #757575;
+    color: #fff;
+    border-color: #757575;
+}
+
+.package-button:focus {
+    outline: none;
+}
+
+
+  
+.search-bar {
+    position: relative;
+    
+  }
+  
+  .search-input {
+    padding-right: 40px !important; /* Adjust padding to make space for the icon */
+    background-image: url('../../images/search-Icon.svg');
+    background-repeat: no-repeat;
+    background-position: right 12px center; /* Adjust the position of the icon */
+
+  }
+  
+  

@@ -3,12 +3,12 @@ import { BrowserRouter as Router, Link, Route, Routes } from 'react-router-dom';
 import { Container, Nav, Navbar } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import chartLogo from './images/chart-logo.svg'; // Importing the chart logo
-import Home from './Home';
-import About from './About';
-import Contact from './Contact';
-import Login from './Login';
-import Signup from './Signup';
-import Help from './Help';
+import Home from './Home/Home';
+import About from './About/About';
+import Contact from './Contact/Contact';
+import Login from './Login/Login';
+import Signup from './Signup/Signup';
+import Help from './Help/Help';
 import NotFound from './NotFound';
 import "./Navbar.css"
 
