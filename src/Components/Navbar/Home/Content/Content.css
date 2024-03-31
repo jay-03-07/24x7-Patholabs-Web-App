@@ -35,7 +35,7 @@
 .search-input {
     padding-right: 40px !important;
     /* Adjust padding to make space for the icon */
-    background-image: url('../../images/search-Icon.svg');
+    background-image: url('../../icons/search-Icon.svg');
     background-repeat: no-repeat;
     background-position: right 12px center;
     /* Adjust the position of the icon */
