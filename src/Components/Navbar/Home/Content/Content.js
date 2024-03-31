@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState} from 'react';
 import { Container, Row, Col, Form, Card, Button, FormLabel } from 'react-bootstrap';
 import Slider from 'react-slick';
 import leftArrowIcon from '../../icons/left-arrow.svg';
@@ -78,7 +78,7 @@ function Content() {
     ];
 
     const [selectedPackage, setSelectedPackage] = useState(null);
-    const sliderRef = useRef(null);
+    
 
     const handlePackageSelection = (packageType) => {
         setSelectedPackage(packageType);
@@ -95,7 +95,7 @@ function Content() {
     
 
     const SampleNextArrow = (props) => {
-        const { className, style, onClick, currentSlide, slideCount, slidesToShow } = props;
+        const { className, style, onClick, currentSlide, slideCount} = props;
     
         return (
             <div className={className} style={{ ...style, display: currentSlide === slideCount - currentSlide ? 'none' : 'block', right: "10px", zIndex: "1" }} onClick={onClick}>
