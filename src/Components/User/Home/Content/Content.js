@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Form, Card, Button, FormLabel } from 'react-bootstrap';
 import Slider from 'react-slick';
 import leftArrowIcon from '../../icons/left-arrow.svg';
@@ -78,8 +78,6 @@ function Content() {
     ];
 
     const [selectedPackage, setSelectedPackage] = useState(null);
-    
-
     const handlePackageSelection = (packageType) => {
         setSelectedPackage(packageType);
     };
@@ -87,8 +85,8 @@ function Content() {
     const SamplePrevArrow = (props) => {
         const { className, style, onClick } = props;
         return (
-            <div className={className} style={{ ...style, display: props.currentSlide === 0 ? 'none' : 'block', left: "-30px", zIndex: "1" }} onClick={onClick}>
-                <img src={leftArrowIcon} alt="Left Arrow" />
+            <div className={className} style={{ ...style, display: props.currentSlide === 0 ? 'none' : 'block', left: "-28px", zIndex: "1"}} onClick={onClick}>
+                {/* <img src={leftArrowIcon} alt="Left Arrow" /> */}
             </div>
         );
     }
@@ -99,7 +97,7 @@ function Content() {
     
         return (
             <div className={className} style={{ ...style, display: currentSlide === slideCount - currentSlide ? 'none' : 'block', right: "10px", zIndex: "1" }} onClick={onClick}>
-                <img src={rightArrowIcon} alt="Right Arrow" />
+                {/* <img src={rightArrowIcon} alt="Right Arrow" /> */}
             </div>
         );
     }
@@ -113,7 +111,7 @@ function Content() {
         speed: 500,
         slidesToShow: 3,
         slidesToScroll: 1,
-        nextArrow: <SampleNextArrow />,
+        nextArrow: <SampleNextArrow/>,
         prevArrow: <SamplePrevArrow />,
         
         
@@ -155,7 +153,7 @@ function Content() {
                     <Slider {...settings}>
                         {packageDetails.map((packageItem, index) => (
                             <div key={index} >
-                                <Card className="h-100 m-3">
+                                <Card className="h-100 m-3 package-details">
                                     <Card.Body>
                                         <Card.Title style={{ fontSize: '18px' }}>{packageItem.name}</Card.Title>
                                         <Card.Text style={{ color: '#757575', fontWeight: '600', fontSize: '16px' }}>
@@ -183,6 +181,7 @@ function Content() {
                     </Slider>
                 </Col>
             </Row>
+   
         </Container>
     );
 }

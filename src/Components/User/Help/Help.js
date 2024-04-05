@@ -1,6 +1,6 @@
 import React from 'react'
 
-function help() {
+function Help() {
   return (
     <div  style={{margin:'100px'}}>
             <h2>Need Help Page</h2>
@@ -11,4 +11,4 @@ function help() {
   )
 }
 
-export default help
+export default Help

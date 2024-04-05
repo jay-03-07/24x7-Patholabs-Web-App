@@ -63,8 +63,20 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+/* .card:first-child {
+    background-color: #fff !important;
 
+} */
 .test-names-container {
     max-height: 100px; /* Adjust as needed */
     overflow: hidden;
 }
+
+
+  .slick-arrow.slick-next:before {
+    content: url('../../icons/right-arrow.svg');
+  }
+  
+  .slick-arrow.slick-prev:before {
+    content: url('../../icons/left-arrow.svg');
+  }
