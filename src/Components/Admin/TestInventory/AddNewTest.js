@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { Form, Button, Card, Row, Col, Table } from 'react-bootstrap';
 import Swal from 'sweetalert2';
-import { db, ref, push } from '../../../Firebase/Firebase'; // Import db from Firebase.js
+import { db } from '../../../Firebase/Firebase'; // Import db from Firebase.js
+import {ref, push, set} from 'firebase/database'; 
 import { useNavigate } from 'react-router-dom';
 
 
 function AddNewTest() {
   const navigate = useNavigate();
   const handleNavigation = () => {
-    navigate('/admin/test-inventory');
+    navigate('/admin/dashboard/test-inventory');
   };
 
   const [packageName, setPackageName] = useState('');
@@ -23,6 +24,7 @@ function AddNewTest() {
   const [newPrice, setNewPrice] = useState('');
   const [testPreparation, setTestPreparation] = useState(''); 
   const [totalAmount, setTotalAmount] = useState(0);
+  const [editingIndex, setEditingIndex] = useState(-1);
 
   const categories = [
     'Full Body Check Up',
@@ -76,6 +78,7 @@ function AddNewTest() {
       });
     } else {
       const updatedTests = [...testDetails];
+      if (editingIndex === -1) {
       const newTest = {
         testName: newTestName,
         description: newDescription,
@@ -93,6 +96,25 @@ function AddNewTest() {
         text: 'Test added successfully!',
         confirmButtonText: 'OK'
       });
+    }else {
+        updatedTests[editingIndex] = {
+          testName: newTestName,
+          description: newDescription,
+          price: parseFloat(newPrice),
+        };
+        setEditingIndex(-1);
+        setTestDetails(updatedTests);
+        setNewTestName('');
+        setNewDescription('');
+        setNewPrice('');
+        calculateTotalAmount(updatedTests);
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Test updated successfully!',
+          confirmButtonText: 'OK'
+        });
+      }
     }
   };
 
@@ -122,6 +144,7 @@ function AddNewTest() {
       // Add package successfully
       try {
         const packageData = {
+          id: push(ref(db, 'testPackages')).key, // Generate unique ID
           packageName,
           reportTime,
           selectedCategory,
@@ -131,7 +154,10 @@ function AddNewTest() {
           totalAmount,
           testPreparation
         };
-        await push(ref(db, 'testPackages'), packageData);
+        await set(ref(db, `testPackages/${packageData.id}`), packageData);
+
+        // await push(ref(db, 'testPackages'), packageData);
+        console.log(packageData)
         
         // Success message
         Swal.fire({
@@ -201,8 +227,14 @@ function AddNewTest() {
     setNewTestName(test.testName);
     setNewDescription(test.description);
     setNewPrice(test.price.toString());
+    setEditingIndex(index);
   };
-
+  const handleClear = () => {
+    setNewTestName('');
+    setNewDescription('');
+    setNewPrice('');
+    setEditingIndex(-1);
+  };
   const handleAddSampleRequired = () => {
     if (newSample) {
       setSampleRequired([...sampleRequired, newSample]);
@@ -385,8 +417,9 @@ function AddNewTest() {
                     </Form.Group>
                   </Col>
                   <Col>
-                    <Button className="me-2 mt-4" onClick={handleAddTest}>Add</Button>
-                    <Button variant="secondary mt-4" onClick={() => setNewTestName('')}>Clear</Button>
+                  <Button className="me-2 mt-4" onClick={handleAddTest}>{editingIndex === -1 ? 'Add' : 'Update'}</Button>
+                  <Button variant="secondary mt-4" onClick={handleClear}>Clear</Button>
+                  
                   </Col>
                 </Row>
                 <Row className="mb-3">

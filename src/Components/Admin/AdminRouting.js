@@ -30,9 +30,15 @@ function AdminRouting() {
         <Route path="/reports" element={<Reports />} />
         <Route path="/feedback" element={<Feedback />} />
         <Route path="/*" element={<NotFound />} />
+
       </Routes>
     </div>
   );
 }
 
 export default AdminRouting;
+
+
+
+
+

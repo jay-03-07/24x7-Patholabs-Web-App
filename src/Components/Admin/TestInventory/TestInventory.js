@@ -1,9 +1,13 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button, Table, Row, Col } from 'react-bootstrap';
 import { RiAddCircleFill, RiFileList2Line } from 'react-icons/ri';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AddNewTest from './AddNewTest';
-import { db, ref, onValue } from '../../../Firebase/Firebase'; // Correct import for Firebase functions
+import { db } from '../../../Firebase/Firebase';
+import { ref, onValue, remove } from 'firebase/database';
+import Swal from 'sweetalert2';
+import EditTest from './EditTest';
 
 function TestInventory() {
   const navigate = useNavigate();
@@ -15,7 +19,7 @@ function TestInventory() {
     const unsubscribe = onValue(testPackagesRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const testPackagesList = Object.values(data);
+        const testPackagesList = Object.entries(data).map(([id, packageData]) => ({ id, ...packageData }));
         setTestPackages(testPackagesList);
       } else {
         setTestPackages([]);
@@ -28,17 +32,60 @@ function TestInventory() {
   }, []);
 
   const handleAddNewTest = () => {
-    navigate('/admin/test-inventory/add-new-test');
+    navigate('/admin/dashboard/test-inventory/add-new-test');
   };
 
   const handleViewAllTests = () => {
-    navigate('/admin/test-inventory/');
+    navigate('/admin/dashboard/test-inventory/');
+  };
+
+  const handleEditTest = (testPackage) => {
+    navigate('/admin/dashboard/test-inventory/edit-test', { state: { testPackage } });
+  };
+
+  const handleDeleteTest = (id) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to delete this test package?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        remove(ref(db, `testPackages/${id}`))
+          .then(() => {
+            console.log('Test package deleted successfully');
+            // Update state after deletion
+            const updatedPackages = testPackages.filter(testPackage => testPackage.id !== id);
+            setTestPackages(updatedPackages);
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: 'Test package deleted successfully!',
+              confirmButtonText: 'OK'
+            });
+          })
+          .catch((error) => {
+            console.error('Error deleting test package:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to delete test package. Please try again later.',
+              confirmButtonText: 'OK'
+            });
+          });
+      }
+    });
   };
 
   const renderContent = () => {
     switch (location.pathname) {
-      case '/admin/test-inventory/add-new-test':
+      case '/admin/dashboard/test-inventory/add-new-test':
         return <AddNewTest />;
+      case '/admin/dashboard/test-inventory/edit-test':
+        return <EditTest />;
       default:
         return (
           <div>
@@ -50,17 +97,33 @@ function TestInventory() {
                   <th>Package Name</th>
                   <th>Category</th>
                   <th>Price</th>
-                  {/* Add more table headers as needed */}
+                  <th>Estimated Report Time</th>
+                  <th>Sample Required for Test</th>
+                  <th>Test For</th>
+                  <th>Test Name</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {testPackages.map((testPackage, index) => (
-                  <tr key={index}>
+                  <tr key={testPackage.id}>
+                    {/* <td>{testPackage.id}</td> */}
                     <td>{index + 1}</td>
                     <td>{testPackage.packageName}</td>
                     <td>{testPackage.selectedCategory}</td>
                     <td>{testPackage.totalAmount}</td>
-                    {/* Add more table cells as needed */}
+                    <td>{testPackage.reportTime}</td>
+                    <td>{testPackage.sampleRequired.join(', ')}</td>
+                    <td>{testPackage.selectedTestFor.join(', ')}</td>
+                    <td>{testPackage.testDetails.map(test => test.testName).join(', ')}</td>
+                    <td>
+                      <td>
+                        <div style={{ textAlign: 'center' }}>
+                          <Button variant="primary" size="sm" onClick={() => handleEditTest(testPackage)} style={{ margin: '2px' }}>Edit</Button>
+                          <Button variant="danger" size="sm" className="ms-2" onClick={() => handleDeleteTest(testPackage.id)}>Delete</Button>
+                        </div>
+                      </td>
+                    </td>
                   </tr>
                 ))}
               </tbody>
