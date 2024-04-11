@@ -96,11 +96,13 @@ function TestInventory() {
                   <th>ID</th>
                   <th>Package Name</th>
                   <th>Category</th>
-                  <th>Price</th>
-                  <th>Estimated Report Time</th>
+                  <th>Test Name</th>
                   <th>Sample Required for Test</th>
                   <th>Test For</th>
-                  <th>Test Name</th>
+                  <th>Estimated Report Time</th>
+                  <th>Original Amount</th>
+                  <th>Discount %</th>
+                  <th>Total Amount</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -111,11 +113,13 @@ function TestInventory() {
                     <td>{index + 1}</td>
                     <td>{testPackage.packageName}</td>
                     <td>{testPackage.selectedCategory}</td>
-                    <td>{testPackage.totalAmount}</td>
-                    <td>{testPackage.reportTime}</td>
+                    <td>{testPackage.testDetails.map(test => test.testName).join(', ')}</td>
                     <td>{testPackage.sampleRequired.join(', ')}</td>
                     <td>{testPackage.selectedTestFor.join(', ')}</td>
-                    <td>{testPackage.testDetails.map(test => test.testName).join(', ')}</td>
+                    <td>{testPackage.reportTime}</td>
+                    <td><span style={{fontWeight:"500"}}>{testPackage.totalAmount}</span></td>
+                    <td>{testPackage.discountPercent > 0 ? <span style={{color:"#1aab2a", fontWeight:"bold"}}>{testPackage.discountPercent+"% off"}</span>:<span style={{color:"red", fontWeight:"bold"}}>No</span> }</td>
+                    <td><span style={{fontWeight:"700"}}>{testPackage.payableAmount}</span></td>
                     <td>
                       <td>
                         <div style={{ textAlign: 'center' }}>
