@@ -448,12 +448,19 @@ function AddNewTest() {
                       <Form.Control type="text" value={newTestName} onChange={(e) => setNewTestName(e.target.value)} />
                     </Form.Group>
                   </Col>
-                  <Col>
-                    <Form.Group controlId="newDescription">
-                      <Form.Label>Description:</Form.Label>
-                      <Form.Control type="text" value={newDescription} onChange={(e) => setNewDescription(e.target.value)} />
-                    </Form.Group>
-                  </Col>
+                  <Row className="mb-3">
+                                        <Col>
+                                            <Form.Group controlId="newDescription">
+                                                <Form.Label>Description:</Form.Label>
+                                                <Form.Control
+                                                    as="textarea" 
+                                                    rows={3} // 
+                                                    value={newDescription}
+                                                    onChange={(e) => setNewDescription(e.target.value)}
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
                   <Col>
                     <Form.Group controlId="newPrice">
                       <Form.Label>Price:</Form.Label>
