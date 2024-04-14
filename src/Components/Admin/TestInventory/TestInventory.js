@@ -122,7 +122,7 @@ function TestInventory() {
                     <td><span style={{fontWeight:"700"}}>{testPackage.payableAmount}</span></td>
                     <td>
                       <td>
-                        <div style={{ textAlign: 'center' }}>
+                        <div className="d-flex" style={{ textAlign: 'center' }}>
                           <Button variant="primary" size="sm" onClick={() => handleEditTest(testPackage)} style={{ margin: '2px' }}>Edit</Button>
                           <Button variant="danger" size="sm" className="ms-2" onClick={() => handleDeleteTest(testPackage.id)}>Delete</Button>
                         </div>
