@@ -10,7 +10,7 @@
   }
 
 .navbar {
-    background-color: #343a40 !important; /* Dark background color */
+    background-color: #fff !important; /* Dark background color */
   }
   
 
@@ -35,3 +35,17 @@
     margin-left: 2rem; /* Adjust the margin as needed */
     font-size: 1.8rem;  
 }
+/* .cart-badge{
+  position:absolute;
+  background: #ff6f61;
+  margin-top: 5px;
+  color: #fff;
+  top: 0;
+  font-size: 14px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  border-radius: 5px;
+  box-shadow: 0 0 1px #333;
+  text-align: center;
+} */
