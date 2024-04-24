@@ -1,14 +1,127 @@
-import React from 'react'
+import React, { useState } from "react";
+import { Container, Button, Spinner } from 'react-bootstrap';
+import { getAuth, signInWithPhoneNumber } from "firebase/auth";
+import { RecaptchaVerifier } from "firebase/auth";
+import { firebaseApp } from "./../../../Firebase/Firebase";
+
+import "../Login/Login.css";
 
 function Signup() {
-  return (
-    <div  style={{margin:'100px'}}>
-            <h2>Sign Up Page</h2>
-            <p>    Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem inventore consequuntur sed nulla sint, provident dolorum, praesentium recusandae debitis exercitationem tenetur doloremque laborum blanditiis temporibus dolorem facere dolor ea alias iure officiis excepturi corrupti omnis! Autem qui saepe assumenda temporibus quaerat repudiandae nobis. Enim inventore architecto incidunt corporis id repellendus, quaerat quidem tempora modi ipsum saepe tempore doloremque facere minus, omnis officiis quisquam natus minima atque sit provident rem vero reprehenderit. Tempore molestias est quam ipsam voluptas accusantium, ab veniam dignissimos voluptate quos veritatis ratione mollitia, assumenda illum explicabo doloremque optio reprehenderit odio vero aut placeat dolores sapiente voluptatibus necessitatibus! Enim corrupti voluptatem quos consectetur sunt, laudantium esse cupiditate optio a maiores alias iure debitis culpa aliquam veniam repellendus molestiae cum eligendi asperiores doloribus cumque! Nesciunt nisi ex, consequuntur enim laboriosam culpa veniam rem asperiores quibusdam ipsam, ab ipsa sint possimus commodi rerum esse reiciendis fugiat alias velit minima voluptates, deleniti cupiditate nam? Molestias culpa nemo provident error. Voluptatibus aut saepe labore repudiandae nemo natus nulla iusto nam ratione obcaecati molestiae nisi, fugit aliquid eos vero odio ipsa eveniet quidem soluta iste dignissimos reiciendis! Magnam deserunt praesentium dicta et fuga illum, assumenda, voluptas earum a in quam quidem ad modi, unde cupiditate sint! Accusamus optio obcaecati praesentium magni delectus aut nesciunt impedit quo voluptatem quos voluptates, voluptas itaque sequi tenetur harum ab minus eaque illum tempora?
+  const auth = getAuth(firebaseApp);// Initialize auth object using firebaseApp
 
-</p>
+  const [phoneNumberFocused, setPhoneNumberFocused] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [verifyOtp, setVerifyOtp] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handlePhoneNumberFocus = () => {
+    setPhoneNumberFocused(true);
+  };
+
+  const handlePhoneNumberBlur = () => {
+    if (!phoneNumber) {
+      setPhoneNumberFocused(false);
+    }
+  };
+
+  const handlePhoneNumberChange = (event) => {
+    const formattedPhoneNumber = event.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+    setPhoneNumber(formattedPhoneNumber);
+  };
+
+  const sendOTP = (e) => {
+    e.preventDefault();
+  
+    if (phoneNumber === "" || phoneNumber.length < 10) {
+      alert("Please enter a valid phone number.");
+      return;
+    }
+    setLoading(true);
+  
+    const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      size: 'invisible',
+      callback: () => {
+        console.log('recaptcha resolved..');
+      }
+    }, );
+  
+    signInWithPhoneNumber(auth, `+91${phoneNumber}`, recaptchaVerifier) // Append +91 to the phone number for Indian format
+      .then((confirmationResult) => {
+        setVerifyOtp(confirmationResult);
+        alert("OTP sent successfully. Please check your phone for the code.");
+        setShowOtpInput(true);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error sending OTP:", error);
+        alert("Failed to send OTP. Please try again later.");
+        setLoading(false);
+      });
+  };
+  
+  const verifyOTP = () => {
+    if (!otp || otp.length !== 6 || !verifyOtp) {
+      alert("Please enter a valid 6-digit OTP.");
+      return;
+    }
+    setLoading(true);
+    verifyOtp.confirm(otp)
+      .then((result) => {
+        alert('OTP verified successfully!');
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error verifying OTP:", error);
+        alert("Failed to verify OTP. Please make sure you entered the correct OTP.");
+        setLoading(false);
+      });
+  };
+  
+
+  return (
+    <div>
+      <Container fluid>
+        <h2 className="mb-4">Sign Up</h2>
+        <form>
+          <p className="mb-4">Please enter your Mobile number to receive One Time Password (OTP)</p>
+          <div className={`form-group${phoneNumberFocused ? " focused" : ""}`}>
+            <label htmlFor="phone" className="label">Phone Number</label>
+            <input
+              type="tel"
+              id="phone"
+              className="form-control"
+              value={phoneNumber}
+              onChange={handlePhoneNumberChange}
+              onFocus={handlePhoneNumberFocus}
+              onBlur={handlePhoneNumberBlur}
+            />
+          </div>
+          <div id="recaptcha-container"></div>
+          {!showOtpInput ? (
+            <Button onClick={sendOTP} className="w-100 btn-lg btn-block mb-4" disabled={loading}>
+              {loading ? <Spinner animation="border" size="sm" /> : 'Send OTP'}
+            </Button>
+          ) : (
+            <div>
+              <label htmlFor="otp" className="mt-4">One Time Password</label>
+              <input
+                type="number"
+                placeholder="Enter OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                className="form-control"
+              />
+              <Button onClick={verifyOTP} variant="primary" className="w-100 btn-lg btn-block mb-4" disabled={loading}>
+                {loading ? <Spinner animation="border" size="sm" /> : 'Verify OTP'}
+              </Button>
+            </div>
+          )}
+        </form>
+      </Container>
     </div>
-  )
+  );
 }
 
-export default Signup
+export default Signup;

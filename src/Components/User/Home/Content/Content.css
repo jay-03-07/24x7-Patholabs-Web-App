@@ -14,7 +14,7 @@
     cursor: pointer;
 }
 
-.package-button:hover,
+/* .package-button:hover, */
 .package-button.active {
     background-color: #757575;
     color: #fff;
@@ -51,9 +51,15 @@
     background-color: rgba(26, 171, 42, .05);
     font-weight: bold;
 }
-.add-to-chart{
+.add-to-cart{
     background-color: #ff6f61 !important;
     border-color: #ff6f61 !important;
+    color: #fff;
+    font-weight: bold !important;
+}
+.go-to-cart{
+    background-color: #1aab2a !important;
+    border-color: #1aab2a !important;
     color: #fff;
     font-weight: bold !important;
 }
@@ -80,3 +86,6 @@
   .slick-arrow.slick-prev:before {
     content: url('../../icons/left-arrow.svg');
   }
+
+
+  
