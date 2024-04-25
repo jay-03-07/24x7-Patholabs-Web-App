@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { Container, Button, Spinner } from 'react-bootstrap';
 import "./Login.css";
-import { getAuth, signInWithPhoneNumber } from "firebase/auth"; 
-import { RecaptchaVerifier } from "firebase/auth"; 
-import { firebaseApp } from './../../../Firebase/Firebase'; 
+import { getAuth, signInWithPhoneNumber } from "firebase/auth";
+import { RecaptchaVerifier } from "firebase/auth";
+import { db, firebaseApp } from "./../../../Firebase/Firebase";
+import { ref, get } from 'firebase/database';
+import { useNavigate } from "react-router-dom";
+
 // import { Link } from "react-router-dom";
 
-function Login() {
+function Login( {onHide}) {
   const auth = getAuth(firebaseApp); // Initialize auth object using firebaseApp
 
   const [phoneNumberFocused, setPhoneNumberFocused] = useState(false);
@@ -15,6 +18,10 @@ function Login() {
   const [otp, setOtp] = useState("");
   const [verifyOtp, setVerifyOtp] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  
+
 
   const handlePhoneNumberFocus = () => {
     setPhoneNumberFocused(true);
@@ -34,34 +41,51 @@ function Login() {
 
   const sendOTP = (e) => {
     e.preventDefault();
-  
-    if (phoneNumber === "" || phoneNumber.length < 10) {
-      alert("Please enter a valid phone number.");
+
+    const phoneNumberRegex = /^[0-9]{10}$/; // Regular expression to match a 10-digit number
+    if (!phoneNumberRegex.test(phoneNumber)) {
+      alert("Please enter a valid 10-digit phone number.");
       return;
     }
     setLoading(true);
-  
-    const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-      size: 'invisible',
-      callback: () => {
-        console.log('recaptcha resolved..');
-      }
-    }, );
-  
-    signInWithPhoneNumber(auth, `+91${phoneNumber}`, recaptchaVerifier) // Append +91 to the phone number for Indian format
-      .then((confirmationResult) => {
-        setVerifyOtp(confirmationResult);
-        alert("OTP sent successfully. Please check your phone for the code.");
-        setShowOtpInput(true);
-        setLoading(false);
+
+    // Check if the user is signed up before sending OTP
+    const userRef = ref(db, `patients/${phoneNumber}`);
+    get(userRef)
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          // User exists, proceed with sending OTP
+          const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            size: 'invisible',
+            callback: () => {
+              console.log('recaptcha resolved..');
+            }
+          });
+          signInWithPhoneNumber(auth, `+91${phoneNumber}`, recaptchaVerifier)
+            .then((confirmationResult) => {
+              setVerifyOtp(confirmationResult);
+              alert("OTP sent successfully. Please check your phone for the code.");
+              setShowOtpInput(true);
+              setLoading(false);
+            })
+            .catch((error) => {
+              console.error("Error sending OTP:", error);
+              alert("Failed to send OTP. Please try again later.");
+              setLoading(false);
+            });
+        } else {
+          // User does not exist, show message to sign up first
+          alert("User is not signed up. Please sign up first.");
+          setLoading(false);
+        }
       })
       .catch((error) => {
-        console.error("Error sending OTP:", error);
-        alert("Failed to send OTP. Please try again later.");
+        console.error("Error checking user existence:", error);
+        alert("Failed to check user existence. Please try again later.");
         setLoading(false);
       });
   };
-  
+
   const verifyOTP = () => {
     if (!otp || otp.length !== 6 || !verifyOtp) {
       alert("Please enter a valid 6-digit OTP.");
@@ -72,6 +96,9 @@ function Login() {
       .then((result) => {
         alert('OTP verified successfully!');
         setLoading(false);
+        onHide ();
+        navigate('/'); // Navigate to the home page
+
       })
       .catch((error) => {
         console.error("Error verifying OTP:", error);
@@ -101,7 +128,7 @@ function Login() {
           <div id="recaptcha-container"></div>
           {!showOtpInput ? (
             <Button onClick={sendOTP} className="w-100 btn-lg btn-block mb-4" disabled={loading}>
-                            {loading ? <Spinner animation="border" size="sm" /> : 'LOGIN'}
+              {loading ? <Spinner animation="border" size="sm" /> : 'LOGIN'}
 
             </Button>
           ) : (
@@ -127,3 +154,4 @@ function Login() {
 }
 
 export default Login;
+
