@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Row, Col, Button, Card, Alert } from 'react-bootstrap'; 
 import { db, auth } from '../../../Firebase/Firebase';
-import { ref, get, set, onValue } from 'firebase/database';
+import { ref, get, set, onValue, update } from 'firebase/database';
 import { FaUser, FaEnvelope, FaPhone, FaUserClock, FaMapMarkerAlt, FaSave, FaEdit, FaTimes, FaTrash, FaFemale, FaMale } from 'react-icons/fa';
 import AddNewPatient from '../AddNewPatient/AddNewPatient';
 import { useNavigate } from 'react-router-dom';
@@ -89,6 +89,7 @@ const Profile = () => {
   };
 
   const handleEdit = () => {
+    setOriginalFormData({ ...formData });
     setShowForm(true);
     setEditMode(true);
     setShowPatientMembers(false);
@@ -104,18 +105,27 @@ const Profile = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-   
+  
+    // Check if all required fields are filled
     if (!formData.name || !formData.email || !formData.age || !formData.gender || !formData.address) {
       setValidationError("Please fill out all fields.");
       return;
     }
-
+  
     if (auth.currentUser) {
       const userPhoneNumber = auth.currentUser.phoneNumber.substring(3);
-      const userRef = ref(db, `patients/${userPhoneNumber}/profile`);
-            set(userRef, {
-        ...formData
+      const userRef = ref(db, `patients/${userPhoneNumber}`);
+  
+      // Retrieve existing patient member data
+      const patientMembersRef = ref(db, `patients/${userPhoneNumber}/patientMembers`);
+  
+      // Update only the profile fields
+      update(userRef, {
+        name: formData.name,
+        email: formData.email,
+        age: formData.age,
+        gender: formData.gender,
+        address: formData.address
       }).then(() => {
         console.log('Profile updated successfully');
         setFormSubmitted(true);
@@ -123,11 +133,23 @@ const Profile = () => {
         setEditMode(true);
         setShowPatientMembers(true);
         setValidationError("");
+  
+        // Update patient members if necessary
+        onValue(patientMembersRef, (snapshot) => {
+          const patientMembersData = snapshot.val();
+          if (patientMembersData) {
+            const members = Object.entries(patientMembersData).map(([id, data]) => ({ id, ...data }));
+            setPatientMembers(members);
+          } else {
+            setPatientMembers([]);
+          }
+        });
       }).catch((error) => {
         console.error('Error updating profile:', error);
       });
     }
   };
+  
 
   const handleDeletePatient = (id) => {
     const userPhoneNumber = auth.currentUser.phoneNumber.substring(3);
