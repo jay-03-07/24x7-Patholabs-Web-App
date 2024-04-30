@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { Container, Button, Spinner } from 'react-bootstrap';
 import { getAuth, signInWithPhoneNumber } from "firebase/auth";
 import { RecaptchaVerifier } from "firebase/auth";
-import { firebaseApp } from "./../../../Firebase/Firebase";
+import { db, firebaseApp } from "./../../../Firebase/Firebase";
+import { ref, set, get } from 'firebase/database';
+import { useNavigate } from "react-router-dom";
 
 import "../Login/Login.css";
 
-function Signup() {
+function Signup( {onHide }) {
   const auth = getAuth(firebaseApp);// Initialize auth object using firebaseApp
 
   const [phoneNumberFocused, setPhoneNumberFocused] = useState(false);
@@ -15,6 +17,7 @@ function Signup() {
   const [otp, setOtp] = useState("");
   const [verifyOtp, setVerifyOtp] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handlePhoneNumberFocus = () => {
     setPhoneNumberFocused(true);
@@ -33,31 +36,70 @@ function Signup() {
 
   const sendOTP = (e) => {
     e.preventDefault();
-  
-    if (phoneNumber === "" || phoneNumber.length < 10) {
-      alert("Please enter a valid phone number.");
+
+    const phoneNumberRegex = /^[0-9]{10}$/; // Regular expression to match a 10-digit number
+    if (!phoneNumberRegex.test(phoneNumber)) {
+      alert("Please enter a valid 10-digit phone number.");
       return;
     }
     setLoading(true);
-  
-    const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-      size: 'invisible',
-      callback: () => {
-        console.log('recaptcha resolved..');
-      }
-    }, );
-  
-    signInWithPhoneNumber(auth, `+91${phoneNumber}`, recaptchaVerifier) // Append +91 to the phone number for Indian format
-      .then((confirmationResult) => {
-        setVerifyOtp(confirmationResult);
-        alert("OTP sent successfully. Please check your phone for the code.");
-        setShowOtpInput(true);
-        setLoading(false);
+
+    // Check if the user is already signed up
+    const userRef = ref(db, `patients/${phoneNumber}`);
+    get(userRef)
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          // User already exists, show message and prevent signup
+          alert("User already signed up. Please login instead.");
+          setLoading(false);
+        } else {
+          // User does not exist, proceed with sending OTP
+          const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            size: 'invisible',
+            callback: () => {
+              console.log('recaptcha resolved..');
+            }
+          });
+
+          signInWithPhoneNumber(auth, `+91${phoneNumber}`, recaptchaVerifier)
+            .then((confirmationResult) => {
+              setVerifyOtp(confirmationResult);
+              alert("OTP sent successfully. Please check your phone for the code.");
+              setShowOtpInput(true);
+              setLoading(false);
+            })
+            .catch((error) => {
+              console.error("Error sending OTP:", error);
+              alert("Failed to send OTP. Please try again later.");
+              setLoading(false);
+            });
+        }
       })
       .catch((error) => {
-        console.error("Error sending OTP:", error);
-        alert("Failed to send OTP. Please try again later.");
+        console.error("Error checking user existence:", error);
+        alert("Failed to check user existence. Please try again later.");
         setLoading(false);
+      });
+  };
+
+  const handleSignup = (userPhoneNumber) => {
+    // Create a user object with the required fields
+    const userData = {
+      phoneNumber: userPhoneNumber,
+      // Add more user data fields if needed
+    };
+  
+    // Store user data in Firebase under 'patients' with the user's phone number as the ID
+    set(ref(db, `patients/${userPhoneNumber}`), userData)
+      .then(() => {
+        console.log('User signed up and data stored successfully');
+        // Call the onHide callback to close the modal
+        onHide ();
+        navigate('/profile'); // Navigate to the profile page
+      })
+      .catch((error) => {
+        console.error("Error storing user data:", error);
+        alert("Failed to sign up. Please try again later.");
       });
   };
   
@@ -71,6 +113,8 @@ function Signup() {
       .then((result) => {
         alert('OTP verified successfully!');
         setLoading(false);
+        // Call handleSignup to store user data and navigate to login page
+        handleSignup(phoneNumber);
       })
       .catch((error) => {
         console.error("Error verifying OTP:", error);
@@ -78,7 +122,7 @@ function Signup() {
         setLoading(false);
       });
   };
-  
+
 
   return (
     <div>
