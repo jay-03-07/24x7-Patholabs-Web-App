@@ -97,7 +97,7 @@ function Login( {onHide}) {
         alert('OTP verified successfully!');
         setLoading(false);
         onHide ();
-        navigate('/'); // Navigate to the home page
+        // navigate('/'); // Navigate to the home page
 
       })
       .catch((error) => {
