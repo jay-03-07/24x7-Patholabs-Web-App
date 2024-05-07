@@ -72,7 +72,7 @@ function Cart() {
                 if (user.phoneNumber) {
                     // Phone number is verified
                     // console.log('User is logged in with phone number:', user.phoneNumber);
-                    navigate('/patient-detials', { state: { cartItems, priceDetails, isChecked } }); // Pass cart data to patient-details page
+                    navigate('/patient-details', { state: { cartItems, priceDetails, isChecked } }); // Pass cart data to patient-details page
 
                     // Navigate or perform the action
                 } else {
@@ -92,7 +92,9 @@ function Cart() {
 
 
     useEffect(() => {
+// Save the state of the checkbox to local storage
 
+        localStorage.setItem('hardCopyChecked', isChecked);
         const updatePriceDetails = () => {
             // Calculate total M.R.P. Total
             const totalMRPTotal = cartItems.reduce((acc, item) => acc + item.totalAmount, 0);
@@ -100,14 +102,15 @@ function Cart() {
             // Calculate total Price Discount
             const totalPriceDiscount = cartItems.reduce((acc, item) => acc + (item.totalAmount - item.payableAmount), 0);
 
-            // Calculate total To be Paid
-            const totalToBePaid = cartItems.reduce((acc, item) => acc + item.payableAmount, 0);
-
-            // Calculate total Savings
-            const totalSavings = totalMRPTotal - totalToBePaid;
-
             // Calculate additional amount for Hard copy of reports
             const hardCopyAmount = isChecked ? 150 : 0;
+
+            // Calculate total To be Paid
+            const totalToBePaid = cartItems.reduce((acc, item) => acc + item.payableAmount, 0) + hardCopyAmount;
+
+            // Calculate total Savings
+            const totalSavings = totalPriceDiscount;
+
             setPriceDetails({
 
                 totalMRPTotal,
@@ -123,9 +126,7 @@ function Cart() {
             });
 
         };
-        // Save the state of the checkbox to local storage
-
-        localStorage.setItem('hardCopyChecked', isChecked);
+        
         updatePriceDetails();
 
     }, [cartItems, isChecked,]);
@@ -245,7 +246,7 @@ function Cart() {
                                                             <div className='mt-2' style={{ display: 'flex', alignItems: 'center' }}>
                                                                 <p><b>TO BE PAID</b></p>
                                                                 <div style={{ flex: 1, textAlign: 'right' }}>
-                                                                    <p>₹{priceDetails.totalToBePaid + priceDetails.hardCopyAmount}</p>
+                                                                    <p>₹{priceDetails.totalToBePaid}</p>
                                                                 </div>
                                                             </div>
                                                             {priceDetails.totalPriceDiscount > 0 && (
