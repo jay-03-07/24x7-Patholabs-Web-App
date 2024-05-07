@@ -237,6 +237,12 @@ const handleSave = () => {
                 />
 
               </div>
+              {patientMembers.length === 0 && (
+              <div className="text-center mt-4">
+                  <Button className='me-2' variant="success" onClick={handleSave}>Save</Button>
+                  <Button className='me-2' variant="secondary" onClick={() => navigate(-1)}>Back</Button>
+                </div>
+              )}
             </Card.Body>
           </Card>
           {patientMembers.length > 0 && (
