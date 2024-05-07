@@ -16,7 +16,7 @@ import Profile from './Profile/Profile';
 import Orders from './Orders/Orders';
 import OrderDetails from './Orders/OrderDetails';
 
-import PatientDetails from './PatientDetials/PatientDetials';
+import PatientDetails from './PatientDetails/PatientDetails';
 import OrderSummary from './OrderSummary/OrderSummary';
 
 function UserRouting() {
