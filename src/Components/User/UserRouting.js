@@ -14,6 +14,8 @@ import Cart from './Cart/Cart';
 import { CartProvider } from './Cart/CartContext';
 import Profile from './Profile/Profile';
 import Orders from './Orders/Orders';
+import OrderDetails from './Orders/OrderDetails';
+
 import PatientDetails from './PatientDetials/PatientDetials';
 import OrderSummary from './OrderSummary/OrderSummary';
 
@@ -63,12 +65,20 @@ const [user, setUser] = useState(() => {
                         element={<PrivateUserRoute isAuthenticated={user !== null} element={<Orders />} />}
                     />
                      <Route
-                        path="/patient-detials"
+                        path="/patient-details"
                         element={<PrivateUserRoute isAuthenticated={user !== null} element={<PatientDetails />} />}
                     />
                       <Route
                         path="/order-summary"
                         element={<PrivateUserRoute isAuthenticated={user !== null} element={<OrderSummary />} />}
+                    />
+                     <Route
+                        path="/orders"
+                        element={<PrivateUserRoute isAuthenticated={user !== null} element={<Orders />} />}
+                    />
+                      <Route
+                        path="/orders-details/:orderId"
+                        element={<PrivateUserRoute isAuthenticated={user !== null} element={<OrderDetails />} />}
                     />
                     <Route path="*" element={<NotFound />} />
                 </Routes>

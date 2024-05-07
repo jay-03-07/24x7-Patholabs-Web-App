@@ -1,7 +1,7 @@
 // CartContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { db } from '../../../Firebase/Firebase';
-import { ref, push, remove } from 'firebase/database';
+// import { db } from '../../../Firebase/Firebase';
+// import { ref, push, remove } from 'firebase/database';
 
 const CartContext = createContext();
 
@@ -28,6 +28,7 @@ export const CartProvider = ({ children }) => {
     };
   }, []);
 
+  
   const addToCart = (item) => {
     // Check if the item is already in the cart
     const isItemInCart = cartItems.find((cartItem) => cartItem.id === item.id);
@@ -37,8 +38,8 @@ export const CartProvider = ({ children }) => {
     setCartItems((prevItems) => [...prevItems, item]);
 
     // Add item to Firebase database
-    const cartRef = ref(db, 'cartItems');
-    push(cartRef, item); // Push the new item to Firebase database
+    // const cartRef = ref(db, 'cartItems');
+    // push(cartRef, item); // Push the new item to Firebase database
   };
 
   const removeFromCart = (itemId) => {
@@ -48,8 +49,8 @@ export const CartProvider = ({ children }) => {
 
     // Remove item from Firebase database
     // Assuming each item has a unique identifier (e.g., itemId)
-    const cartItemRef = ref(db, `cartItems/${itemId}`);
-    remove(cartItemRef);
+    // const cartItemRef = ref(db, `cartItems/${itemId}`);
+    // remove(cartItemRef);
   };
 
   const clearCart = () => {
@@ -57,8 +58,8 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
 
     // Clear cart items from Firebase database
-    const cartRef = ref(db, 'cartItems');
-    remove(cartRef);
+    // const cartRef = ref(db, 'cartItems');
+    // remove(cartRef);
   };
 
   return (

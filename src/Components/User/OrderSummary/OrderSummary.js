@@ -1,12 +1,17 @@
-import React from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import myconsultations from '../icons/my-consultations-icon.svg';
 import { useNavigate } from 'react-router-dom';
+import { db, auth } from '../../../Firebase/Firebase';
+import { push, ref, set } from 'firebase/database';
+import Swal from 'sweetalert2'; // Import SweetAlert library
+import { useCart } from '../Cart/CartContext';
 
 const OrderSummary = () => {
+
     // Retrieve data from localStorage
     const storedData = JSON.parse(localStorage.getItem('orderData'));
     const navigate = useNavigate();
+    const {clearCart } = useCart();
 
     // Destructure the stored data safely to prevent errors if it's undefined
     const { selectedPatient, selectedDate, selectedTime, cartItems, priceDetails, isChecked } = storedData || {};
@@ -21,10 +26,74 @@ const OrderSummary = () => {
         const time = new Date(`1970-01-01T${timeString}`);
         return time.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
     };
+
+    // Function to generate an order number
+    const generateOrderNumber = () => {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const randomDigits = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+        return `ORD-${year}${month}${day}-${randomDigits}`;
+    };
+
+    // Function to save order to Realtime Database
+    const saveOrderToDatabase = async (orderData) => {
+        try {
+            // Generate a unique order number
+            // Example usage
+            const orderNumber = generateOrderNumber();
+            // console.log(orderNumber); // Output: ORD-20240506-1001
+
+            // Convert the time to AM/PM format before saving
+            const formattedTime = formatTime(selectedTime);
+
+            const userPhoneNumber = auth.currentUser.phoneNumber.substring(3);
+            const ordersRef = ref(db, `orders/${userPhoneNumber}`);
+            const newOrderRef = push(ordersRef);
+            await set(newOrderRef, { ...orderData, orderNumber, selectedTime: formattedTime });
+            console.log('Test Booking Successfully!');
+        } catch (error) {
+            console.error('Error saving order:', error);
+        }
+    };
+
+    // Function to handle checkout
+    const handleCheckout = async () => {
+        const orderData = {
+            selectedPatient,
+            selectedDate,
+            selectedTime,
+            cartItems,
+            priceDetails,
+        };
+
+        // Save order to Firestore database
+        await saveOrderToDatabase(orderData);
+
+        // Remove cartItems from localStorage
+        localStorage.removeItem('cartItems');
+        localStorage.removeItem('addedItems');
+        localStorage.removeItem('priceDetails');
+        localStorage.removeItem('hardCopyChecked');
+        localStorage.removeItem('orderData');
+        clearCart();
+
+         // Show SweetAlert message
+         Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Test Booking Successfully!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                navigate('/orders');
+            }
+        });
+    };
     return (
         <div style={{ margin: '100px' }}>
             <Container>
-                <Row className="mt-4">
+                    <Row className="mt-4">
                     <Col>
                         <h4>Order Summary</h4>
                     </Col>
@@ -126,7 +195,7 @@ const OrderSummary = () => {
                                 </Card>
                             </Col>
                             <Col md={12}>
-                                <Button className='w-100 add-to-cart mb-3' variant="primary" style={{}}>Checkout</Button>
+                                <Button className='w-100 add-to-cart mb-3' variant="primary" style={{}} onClick={handleCheckout}>Checkout</Button>
 
                                 <Button className='w-100 mb-4' variant="secondary" style={{}} onClick={() => navigate(-1)}>Back</Button>
                             </Col>

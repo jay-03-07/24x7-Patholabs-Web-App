@@ -13,8 +13,8 @@ import { getAuth, signOut } from 'firebase/auth';
 import userAvatar from './icons/user-avatar.png';
 
 function MyNavbar({ isAuthenticated }) {
-  const { cartItems } = useCart();
-  const [showModal, setShowModal] = useState(false);
+  const { cartItems, clearCart } = useCart();
+    const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState(null);
   const auth = getAuth();
 
@@ -32,6 +32,8 @@ function MyNavbar({ isAuthenticated }) {
     signOut(auth)
       .then(() => {
         console.log('User logged out successfully');
+        clearCart(); // Clear cart items after logout
+
       })
       .catch((error) => {
         console.error('Error occurred during logout:', error);
