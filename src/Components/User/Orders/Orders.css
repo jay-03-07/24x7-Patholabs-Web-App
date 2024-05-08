@@ -1,5 +1,5 @@
 .orders-container {
-  margin: 100px;
+  margin: 80px;
 }
 
 .orders-title {
@@ -26,4 +26,8 @@
 .no-orders {
   font-size: 18px;
   text-align: center;
+}
+.eQFVAY {
+  font-weight: bold !important;
+
 }
