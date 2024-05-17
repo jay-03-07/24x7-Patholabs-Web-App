@@ -127,6 +127,18 @@ const Orders = () => {
       }
     });
   }, []);
+  const getStatusColor = (status) => {
+    switch (status) {
+        case 'Pending':
+          return 'text-danger';
+          case 'Processing':
+            return 'text-primary';
+            case 'Delivered':
+              return 'text-success';
+        default:
+          return 'text-danger';  // Default color
+    }
+};
 
   const columns = [
     {
@@ -174,10 +186,13 @@ const Orders = () => {
     },
     {
       name: 'Status',
-      selector: row => row.isChecked ? 'Delivered' : 'Pending',
+      selector: row => row.status,
       sortable: true,
-      // cell: row => row.isChecked ? 'Delivered' : 'Pending'
-    },
+      cell: row => (
+          <span className={getStatusColor(row.status)} style={{fontWeight:"bold"}}>{row.status}</span>
+      )
+  },
+  
     {
       name: 'Action',
       sortable: false,
@@ -185,10 +200,15 @@ const Orders = () => {
     },
     {
       name: 'E-Report Generated',
-      selector: row => row.isChecked ? 'Available' : 'Pending',
+      selector: row => row.report,
       sortable: true,
-      // cell: row => row.isChecked ? 'Available' : 'Pending'
-    },
+      cell: row => row.report === 'Generated' ? (
+          <Button variant="success" size="sm" href={row.reportUrl} target="_blank" rel="noopener noreferrer">Download Report</Button>
+      ) : (
+          <span style={{fontWeight:"bold", color:"red"}}>Not Generated</span>
+      )
+  }
+  
   ];
   const handleSearch = (event) => {
     setSearchText(event.target.value);
@@ -200,8 +220,8 @@ const Orders = () => {
     `${order.selectedDate} ${order.selectedTime}`.toLowerCase().includes(searchText.toLowerCase()) ||
     order.cartItems.map(item => item.packageName).join(', ').toLowerCase().includes(searchText.toLowerCase()) ||
     `₹${order.priceDetails.totalToBePaid}`.toLowerCase().includes(searchText.toLowerCase()) ||
-    (order.isChecked ? 'Delivered' : 'Pending').toLowerCase().includes(searchText.toLowerCase()) ||
-    (order.isChecked ? 'Available' : 'Pending').toLowerCase().includes(searchText.toLowerCase())
+    (order.status).toLowerCase().includes(searchText.toLowerCase()) ||
+    (order.report).toLowerCase().includes(searchText.toLowerCase())
   );
   
   return (
