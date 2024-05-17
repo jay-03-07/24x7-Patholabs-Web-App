@@ -66,6 +66,8 @@ const OrderSummary = () => {
             selectedTime,
             cartItems,
             priceDetails,
+            status: 'Pending',
+            report: 'Not Generated'
         };
 
         // Save order to Firestore database

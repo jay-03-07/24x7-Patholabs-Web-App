@@ -5,11 +5,12 @@ import Header from './Header';
 import Sidebar from './Sidebar';
 import Home from './Home';
 import TestInventory from './TestInventory/TestInventory';
-import Orders from './Orders/RecentOrders';
+import Orders from './Orders/Orders';
 import Customers from './Customers/Customers';
 import Reports from './Reports/Reports';
 import Feedback from './Feedback/Feedback';
 import NotFound from '../User/NotFound';
+import ViewDetails from './Orders/ViewDetails';
 
 function AdminRouting() {
   const [openSidebarToggle, setOpenSidebarToggle] = useState(false);
@@ -26,6 +27,7 @@ function AdminRouting() {
         <Route path="/" element={<Home />} />
         <Route path="/test-inventory/*" element={<TestInventory />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/view-details/:orderId" element={<ViewDetails />} />
         <Route path="/customers" element={<Customers />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/feedback" element={<Feedback />} />

@@ -348,6 +348,18 @@ const OrderDetails = () => {
     if (!order) {
         return <div>Loading...</div>;
     }
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'Pending':
+                return 'red';
+            case 'Processing':
+                return 'blue';
+            case 'Delivered':
+                return 'green';
+            default:
+                return 'danger';  // Default color
+        }
+    };
 
     return (
         <div style={{ margin: '100px' }}>
@@ -405,10 +417,18 @@ const OrderDetails = () => {
                                     <Card.Title className="mb-3">View Status and Report</Card.Title>
                                     <Row>
                                         <Col md={6}>
-                                            <p><strong>Status:</strong> {order.isChecked ? 'Delivered' : 'Pending'}</p>
+                                            <p>
+                                                <strong>Status: </strong>
+                                                <span style={{ color: getStatusColor(order.status), fontWeight: 'bold' }}>{order.status}</span>
+                                            </p>
                                         </Col>
+
                                         <Col md={6}>
-                                            <p><strong>E-Report Generated:</strong> {order.isChecked ? 'Available' : 'Pending'}</p>
+                                            <p><strong>E-Report Generated:</strong> {order.report === 'Generated' ? (
+                                                <Button variant="success" size='sm' href={order.reportUrl} target="_blank" rel="noopener noreferrer">Download Report</Button>
+                                            ) : (
+                                                <span>Not Generated</span>
+                                            )}</p>
                                         </Col>
                                     </Row>
                                 </Card.Body>
@@ -416,7 +436,7 @@ const OrderDetails = () => {
                         </Col>
                         <Col md={4}>
                             <Row>
-                                <Col md={12}  className='shadow'>
+                                <Col md={12} className='shadow'>
                                     <h4>Price Details</h4>
 
                                     <Card className="mb-4 shadow" style={{ backgroundColor: '#fff' }}>
@@ -464,10 +484,10 @@ const OrderDetails = () => {
                                             </Row>
                                         </Card.Body>
                                     </Card>
-                                        <Button className='w-100 mb-4' variant="secondary" style={{}} onClick={() => navigate(-1)}>Back</Button>
-                                    
+                                    <Button className='w-100 mb-4' variant="secondary" style={{}} onClick={() => navigate(-1)}>Back</Button>
 
-                                  
+
+
                                 </Col>
                             </Row>
                         </Col>
