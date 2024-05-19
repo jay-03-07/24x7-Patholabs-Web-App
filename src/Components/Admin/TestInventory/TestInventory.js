@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button, Table, Row, Col } from 'react-bootstrap';
 import { RiAddCircleFill, RiFileList2Line } from 'react-icons/ri';
@@ -8,6 +7,8 @@ import { db } from '../../../Firebase/Firebase';
 import { ref, onValue, remove } from 'firebase/database';
 import Swal from 'sweetalert2';
 import EditTest from './EditTest';
+import $ from 'jquery';
+import 'datatables.net';
 
 function TestInventory() {
   const navigate = useNavigate();
@@ -30,6 +31,16 @@ function TestInventory() {
       unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if ($.fn.DataTable.isDataTable('#testTable')) {
+      $('#testTable').DataTable().destroy();
+    }
+
+    if (testPackages.length > 0) {
+      $('#testTable').DataTable();
+    }
+  }, [testPackages, location.pathname]);
 
   const handleAddNewTest = () => {
     navigate('/admin/dashboard/test-inventory/add-new-test');
@@ -57,9 +68,11 @@ function TestInventory() {
         remove(ref(db, `testPackages/${id}`))
           .then(() => {
             console.log('Test package deleted successfully');
-            // Update state after deletion
-            const updatedPackages = testPackages.filter(testPackage => testPackage.id !== id);
-            setTestPackages(updatedPackages);
+            setTestPackages(prevTestPackages => prevTestPackages.filter(testPackage => testPackage.id !== id));
+            const table = $('#testTable').DataTable();
+            const rowIndex = table.row(`#${id}`).index();
+            table.row(rowIndex).remove().draw(false);
+
             Swal.fire({
               icon: 'success',
               title: 'Success',
@@ -80,6 +93,7 @@ function TestInventory() {
     });
   };
 
+
   const renderContent = () => {
     switch (location.pathname) {
       case '/admin/dashboard/test-inventory/add-new-test':
@@ -90,7 +104,7 @@ function TestInventory() {
         return (
           <div>
             <h3>View All Test Details</h3>
-            <Table striped bordered hover responsive>
+            <Table id="testTable" striped bordered hover responsive>
               <thead>
                 <tr>
                   <th>ID</th>
@@ -109,7 +123,6 @@ function TestInventory() {
               <tbody>
                 {testPackages.map((testPackage, index) => (
                   <tr key={testPackage.id}>
-                    {/* <td>{testPackage.id}</td> */}
                     <td>{index + 1}</td>
                     <td>{testPackage.packageName}</td>
                     <td>{testPackage.selectedCategory}</td>
@@ -121,12 +134,10 @@ function TestInventory() {
                     <td>{testPackage.discountPercent > 0 ? <span style={{color:"#1aab2a", fontWeight:"bold"}}>{testPackage.discountPercent+"% off"}</span>:<span style={{color:"red", fontWeight:"bold"}}>No</span> }</td>
                     <td><span style={{fontWeight:"700"}}>{testPackage.payableAmount}</span></td>
                     <td>
-                      <td>
-                        <div className="d-flex" style={{ textAlign: 'center' }}>
-                          <Button variant="primary" size="sm" onClick={() => handleEditTest(testPackage)} style={{ margin: '2px' }}>Edit</Button>
-                          <Button variant="danger" size="sm" className="ms-2" onClick={() => handleDeleteTest(testPackage.id)}>Delete</Button>
-                        </div>
-                      </td>
+                      <div className="d-flex" style={{ textAlign: 'center' }}>
+                        <Button variant="primary" size="sm" onClick={() => handleEditTest(testPackage)} style={{ margin: '2px' }}>Edit</Button>
+                        <Button variant="danger" size="sm" className="ms-2" onClick={() => handleDeleteTest(testPackage.id)}>Delete</Button>
+                      </div>
                     </td>
                   </tr>
                 ))}

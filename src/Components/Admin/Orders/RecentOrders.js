@@ -19,30 +19,43 @@ function RecentOrders() {
     const [currentOrderId, setCurrentOrderId] = useState(null);
     const storage = getStorage();
 
-    useEffect(() => {
-        const ordersRef = ref(db, 'orders');
+   useEffect(() => {
+    const ordersRef = ref(db, 'orders');
 
-        onValue(ordersRef, (snapshot) => {
-            try {
-                const ordersData = snapshot.val();
-                if (ordersData) {
-                    const ordersArray = Object.entries(ordersData).flatMap(([phoneNumber, orderData]) =>
-                        Object.entries(orderData).map(([orderId, orderDetails]) => ({ id: orderId, phoneNumber, ...orderDetails }))
-                    );
+    onValue(ordersRef, (snapshot) => {
+        try {
+            const ordersData = snapshot.val();
+            if (ordersData) {
+                const ordersArray = Object.entries(ordersData).flatMap(([phoneNumber, orderData]) =>
+                    Object.entries(orderData).map(([orderId, orderDetails]) => ({ id: orderId, phoneNumber, ...orderDetails }))
+                );
 
-                    // Filter out delivered orders
-                    const filteredOrders = ordersArray.filter(order => order.status !== 'Delivered');
-                    setOrders(filteredOrders);
-                } else {
-                    setOrders([]);
-                }
-                setLoading(false);
-            } catch (error) {
-                setLoading(false);
-                setError('Error fetching orders. Please try again later.');
+                // Sort the orders in descending order based on selectedDate and selectedTime
+                const sortedArray = ordersArray.sort((a, b) => {
+                    // Compare selectedDate
+                    const dateComparison = new Date(b.selectedDate) - new Date(a.selectedDate);
+                    if (dateComparison !== 0) {
+                        return dateComparison;
+                    } else {
+                        // If selectedDate is the same, compare selectedTime
+                        return b.selectedTime.localeCompare(a.selectedTime);
+                    }
+                });
+
+                // Filter out delivered orders
+                const filteredOrders = sortedArray.filter(order => order.status !== 'Delivered');
+                setOrders(filteredOrders);
+            } else {
+                setOrders([]);
             }
-        });
-    }, []);
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            setError('Error fetching orders. Please try again later.');
+        }
+    });
+}, []);
+
 
     useEffect(() => {
         if ($.fn.DataTable.isDataTable('#recentOrdersTable')) {
@@ -119,7 +132,7 @@ function RecentOrders() {
                             <tr>
                                 <th>ID</th>
                                 <th>Order Number</th>
-                                <th>Selected Patient Name</th>
+                                <th>Patient Name</th>
                                 <th>Slot Date and Time</th>
                                 <th>Package Name</th>
                                 <th>Total Amount</th>

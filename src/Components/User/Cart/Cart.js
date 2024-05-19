@@ -92,39 +92,21 @@ function Cart() {
 
 
     useEffect(() => {
-// Save the state of the checkbox to local storage
-
         localStorage.setItem('hardCopyChecked', isChecked);
         const updatePriceDetails = () => {
-            // Calculate total M.R.P. Total
-            const totalMRPTotal = cartItems.reduce((acc, item) => acc + item.totalAmount, 0);
-
-            // Calculate total Price Discount
-            const totalPriceDiscount = cartItems.reduce((acc, item) => acc + (item.totalAmount - item.payableAmount), 0);
-
-            // Calculate additional amount for Hard copy of reports
+            const totalMRPTotal = cartItems.reduce((acc, item) => acc + item.totalAmount, 0).toFixed(2);
+            const totalPriceDiscount = cartItems.reduce((acc, item) => acc + (item.totalAmount - item.payableAmount), 0).toFixed(2);
             const hardCopyAmount = isChecked ? 150 : 0;
-
-            // Calculate total To be Paid
-            const totalToBePaid = cartItems.reduce((acc, item) => acc + item.payableAmount, 0) + hardCopyAmount;
-
-            // Calculate total Savings
+            const totalToBePaid = (cartItems.reduce((acc, item) => acc + item.payableAmount, 0) + hardCopyAmount).toFixed(2);
             const totalSavings = totalPriceDiscount;
 
             setPriceDetails({
-
-                totalMRPTotal,
-
-                totalPriceDiscount,
-
-                totalToBePaid,
-
-                totalSavings,
-
+                totalMRPTotal: parseFloat(totalMRPTotal),
+                totalPriceDiscount: parseFloat(totalPriceDiscount),
+                totalToBePaid: parseFloat(totalToBePaid),
+                totalSavings: parseFloat(totalSavings),
                 hardCopyAmount
-
             });
-
         };
         
         updatePriceDetails();

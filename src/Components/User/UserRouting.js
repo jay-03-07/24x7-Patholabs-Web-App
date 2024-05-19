@@ -52,7 +52,7 @@ const [user, setUser] = useState(() => {
                     {/* <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<Signup />} /> */}
                     <Route path="/cart" element={<Cart />} />
-                    <Route path="/help" element={<Help />} />
+                    <Route path="/contact" element={<Contact />} />
                     <Route path="/package-details/:id" element={<PackageDetails />} />
                     
                     {/* Private routes for authenticated users */}
