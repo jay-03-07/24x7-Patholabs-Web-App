@@ -18,6 +18,8 @@ function Orders() {
     const [showModal, setShowModal] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [currentOrderId, setCurrentOrderId] = useState(null); // New state variable to store the current order ID
+    const [uploading, setUploading] = useState(false); // New state for loader
+
     const storage = getStorage();
 
     useEffect(() => {
@@ -73,15 +75,19 @@ function Orders() {
             const order = orders.find(order => order.id === currentOrderId);
             if (order) {
                 try {
+                    setUploading(true);
                     const uploadTask = await uploadBytes(storageRef(storage, `reports/${order.id}.pdf`), selectedFile);
                     const downloadURL = await getDownloadURL(uploadTask.ref);
-                    // Update the report and reportUrl for the specific order ID
-                    update(ref(db, `orders/${order.phoneNumber}/${order.id}`), { report: 'Generated', reportUrl: downloadURL });
+                    await update(ref(db, `orders/${order.phoneNumber}/${order.id}`), { report: 'Generated', reportUrl: downloadURL });
+                    setUploading(false);
                     setSelectedFile(null);
                     setShowModal(false);
+                    alert('File uploaded successfully!');
                 } catch (error) {
                     console.error('Error uploading file:', error);
+                    setUploading(false);
                     setError('Error uploading file. Please try again.');
+                    alert('Error uploading file. Please try again.');
                 }
             }
         }
@@ -170,7 +176,9 @@ function Orders() {
                                                     <input type="file" accept=".pdf" onChange={handleFileChange} />
                                                 </Modal.Body>
                                                 <Modal.Footer>
-                                                    <Button variant="success" onClick={handleUpload}>Upload Report</Button> {/* No need to pass orderId here */}
+                                                <Button variant="success" onClick={handleUpload} disabled={uploading}>
+                                                        {uploading ? 'Uploading...' : 'Upload Report'}
+                                                    </Button>                                                        
                                                     <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
                                                 </Modal.Footer>
                                             </Modal>
