@@ -17,44 +17,45 @@ function RecentOrders() {
     const [showModal, setShowModal] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [currentOrderId, setCurrentOrderId] = useState(null);
+    const [uploading, setUploading] = useState(false); // New state for loader
     const storage = getStorage();
 
-   useEffect(() => {
-    const ordersRef = ref(db, 'orders');
+    useEffect(() => {
+        const ordersRef = ref(db, 'orders');
 
-    onValue(ordersRef, (snapshot) => {
-        try {
-            const ordersData = snapshot.val();
-            if (ordersData) {
-                const ordersArray = Object.entries(ordersData).flatMap(([phoneNumber, orderData]) =>
-                    Object.entries(orderData).map(([orderId, orderDetails]) => ({ id: orderId, phoneNumber, ...orderDetails }))
-                );
+        onValue(ordersRef, (snapshot) => {
+            try {
+                const ordersData = snapshot.val();
+                if (ordersData) {
+                    const ordersArray = Object.entries(ordersData).flatMap(([phoneNumber, orderData]) =>
+                        Object.entries(orderData).map(([orderId, orderDetails]) => ({ id: orderId, phoneNumber, ...orderDetails }))
+                    );
 
-                // Sort the orders in descending order based on selectedDate and selectedTime
-                const sortedArray = ordersArray.sort((a, b) => {
-                    // Compare selectedDate
-                    const dateComparison = new Date(b.selectedDate) - new Date(a.selectedDate);
-                    if (dateComparison !== 0) {
-                        return dateComparison;
-                    } else {
-                        // If selectedDate is the same, compare selectedTime
-                        return b.selectedTime.localeCompare(a.selectedTime);
-                    }
-                });
+                    // Sort the orders in descending order based on selectedDate and selectedTime
+                    const sortedArray = ordersArray.sort((a, b) => {
+                        // Compare selectedDate
+                        const dateComparison = new Date(b.selectedDate) - new Date(a.selectedDate);
+                        if (dateComparison !== 0) {
+                            return dateComparison;
+                        } else {
+                            // If selectedDate is the same, compare selectedTime
+                            return b.selectedTime.localeCompare(a.selectedTime);
+                        }
+                    });
 
-                // Filter out delivered orders
-                const filteredOrders = sortedArray.filter(order => order.status !== 'Delivered');
-                setOrders(filteredOrders);
-            } else {
-                setOrders([]);
+                    // Filter out delivered orders
+                    const filteredOrders = sortedArray.filter(order => order.status !== 'Delivered');
+                    setOrders(filteredOrders);
+                } else {
+                    setOrders([]);
+                }
+                setLoading(false);
+            } catch (error) {
+                setLoading(false);
+                setError('Error fetching orders. Please try again later.');
             }
-            setLoading(false);
-        } catch (error) {
-            setLoading(false);
-            setError('Error fetching orders. Please try again later.');
-        }
-    });
-}, []);
+        });
+    }, []);
 
 
     useEffect(() => {
@@ -77,7 +78,7 @@ function RecentOrders() {
             setError('Error updating status. Please try again.');
         });
     };
-    
+
 
     const handleFileChange = (e) => {
         setSelectedFile(e.target.files[0]);
@@ -88,17 +89,26 @@ function RecentOrders() {
             const order = orders.find(order => order.id === currentOrderId);
             if (order) {
                 try {
+
+                    setUploading(true);
                     const uploadTask = await uploadBytes(storageRef(storage, `reports/${order.id}.pdf`), selectedFile);
                     const downloadURL = await getDownloadURL(uploadTask.ref);
-                    update(ref(db, `orders/${order.phoneNumber}/${order.id}`), { report: 'Generated', reportUrl: downloadURL });
+                    await update(ref(db, `orders/${order.phoneNumber}/${order.id}`), { report: 'Generated', reportUrl: downloadURL });
+                    setUploading(false);
                     setSelectedFile(null);
                     setShowModal(false);
+                    alert('File uploaded successfully!');
                 } catch (error) {
                     console.error('Error uploading file:', error);
+                    setUploading(false);
                     setError('Error uploading file. Please try again.');
+                    alert('Error uploading file. Please try again.');
                 }
+
             }
+
         }
+
     };
 
     const handleDownload = (reportUrl) => {
@@ -183,7 +193,9 @@ function RecentOrders() {
                                                     <input type="file" accept=".pdf" onChange={handleFileChange} />
                                                 </Modal.Body>
                                                 <Modal.Footer>
-                                                    <Button variant="success" onClick={handleUpload}>Upload Report</Button>
+                                                    <Button variant="success" onClick={handleUpload} disabled={uploading}>
+                                                        {uploading ? 'Uploading...' : 'Upload Report'}
+                                                    </Button>                                                   
                                                     <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
                                                 </Modal.Footer>
                                             </Modal>
