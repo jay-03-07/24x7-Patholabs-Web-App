@@ -6,7 +6,7 @@ import Sidebar from './Sidebar';
 import Home from './Home';
 import TestInventory from './TestInventory/TestInventory';
 import Orders from './Orders/Orders';
-import Customers from './Customers/Customers';
+import Patient from './Patient/Patient';
 import Reports from './Reports/Reports';
 import Feedback from './Feedback/Feedback';
 import NotFound from '../User/NotFound';
@@ -28,7 +28,7 @@ function AdminRouting() {
         <Route path="/test-inventory/*" element={<TestInventory />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/view-details/:orderId" element={<ViewDetails />} />
-        <Route path="/customers" element={<Customers />} />
+        <Route path="/patient" element={<Patient />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/feedback" element={<Feedback />} />
         <Route path="/*" element={<NotFound />} />

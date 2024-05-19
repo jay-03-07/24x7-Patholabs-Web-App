@@ -2,9 +2,9 @@ import React from 'react';
 import Carousel from 'react-bootstrap/Carousel';
 import { Container, Row, Col } from 'react-bootstrap';
 
-import image1 from '../../images/download (1).jpeg';
-import image2 from '../../images/download.jpeg';
-import image3 from '../../images/images.jpeg';
+import image1 from '../../images/Lab-Test-Image--770x480.jpg';
+import image2 from '../../images/Lab-Test-banner-o2.jpg';
+import image3 from '../../images/lab-Test-.jpg';
 
 import safeIcon from '../../images/Safe_76x76_labs.png';
 import homeIcon from '../../images/Lab_delivery_2x.png';
@@ -27,10 +27,10 @@ function Banner() {
                                     alt="First slide"
                                     style={{ width: '100%', height: '400px' }} // Fixed width and height for carousel images
                                 />
-                                <Carousel.Caption>
+                                {/* <Carousel.Caption>
                                     <h3>First slide label</h3>
                                     <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-                                </Carousel.Caption>
+                                </Carousel.Caption> */}
                             </Carousel.Item>
                             <Carousel.Item>
                                 <img
@@ -39,10 +39,10 @@ function Banner() {
                                     alt="Second slide"
                                     style={{ width: '100%', height: '400px' }} // Fixed width and height for carousel images
                                 />
-                                <Carousel.Caption>
+                                {/* <Carousel.Caption>
                                     <h3>Second slide label</h3>
                                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                                </Carousel.Caption>
+                                </Carousel.Caption> */}
                             </Carousel.Item>
                             <Carousel.Item>
                                 <img
@@ -51,10 +51,10 @@ function Banner() {
                                     alt="Third slide"
                                     style={{ width: '100%', height: '400px' }} // Fixed width and height for carousel images
                                 />
-                                <Carousel.Caption>
+                                {/* <Carousel.Caption>
                                     <h3>Third slide label</h3>
                                     <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
-                                </Carousel.Caption>
+                                </Carousel.Caption> */}
                             </Carousel.Item>
                         </Carousel>
                     </Col>

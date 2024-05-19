@@ -7,7 +7,11 @@ function Sidebar({ openSidebarToggle, OpenSidebar }) {
         <aside id="sidebar" className={openSidebarToggle ? "sidebar-responsive" : ""}>
             <div className='sidebar-title'>
                 <div className='sidebar-brand'>
-                    <BsCart3 className='icon_header' /> SHOP
+                    {/* <BsCart3 className='icon_header' /> */}
+                    <h3 style={{color:'white'}}>
+
+                     24x7 Patholabs
+                    </h3>
                 </div>
                 <span className='icon close_icon' onClick={OpenSidebar}>X</span>
             </div>
@@ -29,8 +33,8 @@ function Sidebar({ openSidebarToggle, OpenSidebar }) {
                     </Link>
                 </li>
                 <li className='sidebar-list-item'>
-                    <Link to="/admin/dashboard/customers" className="link">
-                        <BsPeopleFill className='icon' /> Customers
+                    <Link to="/admin/dashboard/patient" className="link">
+                        <BsPeopleFill className='icon' /> Patient
                     </Link>
                 </li>
                 <li className='sidebar-list-item'>

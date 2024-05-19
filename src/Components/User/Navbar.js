@@ -104,7 +104,7 @@ function MyNavbar({ isAuthenticated }) {
                   )}
                 </Link>
               </div>
-              <Nav.Link as={Link} to="/help" className="nav-link-custom ms-2 mx-3">Need Help?</Nav.Link>
+              <Nav.Link as={Link} to="/contact" className="nav-link-custom ms-2 mx-3">Need Help?</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
